@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- **************************************************************** -->
+  	<!--  SPRING ANNOTATION PROCESSING                                    -->
+  	<!-- **************************************************************** -->    
+    <mvc:annotation-driven/>
+    
+	<!-- **************************************************************** -->
+	<!-- THYMELEAF-SPECIFIC ARTIFACTS -->
+	<!-- TemplateResolver <- TemplateEngine <- ViewResolver -->
+	<!-- **************************************************************** -->
+	
+	<!-- Thymeleaf View Resolver - implementation of Spring's ViewResolver interface -->
+  	<bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine"/>
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
+    
+    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+    	<property name="templateResolvers">
+            <set>
+                <ref bean="templateResolver"/>
+            </set>
+        </property>
+		<property name="additionalDialects">
+	    	<set>
+	      		<bean class="nz.net.ultraq.thymeleaf.LayoutDialect"/>
+	    	</set>
+	  	</property>
+	</bean>
+    
+    <!-- Thymeleaf Template Resolver -->
+    <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".html"/>
+        <property name="templateMode" value="HTML"/>
+    </bean>
+    
+	<!-- Spring  -->
+	<!-- <bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean> -->
+
+	<!-- **************************************************************** -->
+  	<!--  RESOURCE FOLDERS CONFIGURATION                                  -->
+  	<!--  Dispatcher configuration for serving static resources           -->
+  	<!-- **************************************************************** -->
+	<mvc:resources location="/WEB-INF/static/" mapping="/static/**" />
+	
+	<!-- **************************************************************** -->
+	<!--  MESSAGE EXTERNALIZATION/INTERNATIONALIZATION                    -->
+	<!--  Standard Spring MessageSource implementation                    -->
+	<!-- **************************************************************** -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="Messages" />
+	</bean>
+	
+	<mvc:view-controller path="/" view-name="index"/>
+	
+	<import resource="/applicationContext.xml" />
+	
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="1000000"/>
+	</bean>
+
+</beans>
